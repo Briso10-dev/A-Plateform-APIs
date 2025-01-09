@@ -91,7 +91,7 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ## Auteur
 
-Kouam Brice
+- [@Kouam Brice](https://github.com/Briso10-dev)
 
 ## Additional Informations
 
