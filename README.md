@@ -33,7 +33,7 @@ cd ts-starter
 yarn install
 ```
 
-### Exécution en mode développement
+### Execution in development mode
 
 To start the development server with automatic restarts on file changes, use:
 
@@ -41,7 +41,7 @@ To start the development server with automatic restarts on file changes, use:
 yarn dev
 ```
 
-### Compilation du projet
+### Project compilation
 
 To compile the project for production, use:
 
@@ -49,7 +49,7 @@ To compile the project for production, use:
 yarn build
 ```
 
-### Démarrage de l'application
+### Starting the application
 
 To start the application after compilation, use:
 
@@ -74,7 +74,7 @@ yarn start
 ```
 The server will be launched on port: http://localhost:3000
 
-API Documentation
+## API Documentation
 The API documentation is accessible at the following address :
 
 ```sh
