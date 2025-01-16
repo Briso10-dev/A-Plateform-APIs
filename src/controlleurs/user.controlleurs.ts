@@ -53,10 +53,12 @@ const Contolleurs = {
 
                 },
             })
-            if (user!=null) {
-                await sendMail(email, "This is an anonymous connection!", `"Your OTP code is : ${user.otp?.code}`)
-                res.json({msg:"User successfully created" }).status(HttpCode.OK)
-            } else res.json({ msg: "could not create user" })
+            if (!user) 
+                res.status(HttpCode.BAD_REQUEST).json({ msg: "could not create user" })
+
+            await sendMail(user.email, "This is an anonymous connection!", `"Your OTP code is : ${user.otp?.code}`)
+            res.status(HttpCode.CREATED).json({msg:"User successfully created" }).status(HttpCode.OK)
+
         } catch (error) {
             sendError(res, error)
         }
