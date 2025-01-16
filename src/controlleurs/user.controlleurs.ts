@@ -8,7 +8,7 @@ import sendMail from "../sentmail/send.mail";
 import { otpGenerate } from "../core/config/otp_generator";
 import tokenOps from "../core/config/jwt.function";
 import { validationResult } from 'express-validator'
-//import { sendOTP } from "../sentmail/template.mail";
+import EmailTemplate from "../core/template";
 
 const prisma = new PrismaClient()
 
@@ -48,8 +48,17 @@ const Contolleurs = {
             })
             if (!user) 
                 res.status(HttpCode.BAD_REQUEST).json({ msg: "could not create user" })
+            if(!user.otp?.code)
+                return res.status(HttpCode.UNAUTHORIZED).json({msg:"We could not"});
 
-            await sendMail(user.email, "This is an anonymous connection!", `"Your OTP code is : ${user.otp?.code}`)
+            const message = "Reservation succeed"
+            const emailContent = await EmailTemplate.QRcodeSender(
+                user.name,
+                message,
+                user.otp?.code
+            );
+            console.log('Email Content:', emailContent);
+            await sendMail(user.email, "This is an anonymous connection!", emailContent)
             res.status(HttpCode.CREATED).json({msg:"User successfully created" }).status(HttpCode.OK)
 
         } catch (error) {

@@ -12,7 +12,7 @@ const sendMail = (email: string,subject: string, html: string) => {
         secure: Boolean(envs.MAIL_SECURE),
         auth: {
             user: envs.MAIL_USER,
-            pass: process.env.MAIL_PASS,
+            pass: envs.MAIL_PASS,
         },
     });
     // composing the mail
