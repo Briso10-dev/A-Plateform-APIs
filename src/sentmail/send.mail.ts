@@ -2,25 +2,25 @@ import { envs } from '../core/config/env';
 import nodemailer from 'nodemailer'
 
 
-const sendMail = (email: string, subject: string, text: string) => {
+const sendMail = (email: string,subject: string, html: string) => {
     // configuring nodemailer
 
     const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        host: envs.GMAIL_HOST,
-        port: envs.GMAIL_PORT,
-        secure: true,
+        service: envs.SERVICE,
+        host: process.env.MAIL_HOST,
+        port: Number(envs.MAIL_PORT),
+        secure: Boolean(envs.MAIL_SECURE),
         auth: {
-            user: envs.GMAIL_EMAIL,
-            pass: envs.GMAIL_PASSWORD,
+            user: envs.MAIL_USER,
+            pass: process.env.MAIL_PASS,
         },
     });
     // composing the mail
     const mailOptions = {
-        from: envs.GMAIL_EMAIL,
+        from:  envs.MAIL_FROM,
         to: email,
-        subject: subject,
-        text: text,
+        subject,
+        html
     };
     // sending the mail
     transporter.sendMail(mailOptions, (error, info) => {

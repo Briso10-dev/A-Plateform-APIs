@@ -24,17 +24,10 @@ const Contolleurs = {
     },
     createUser: async (req: Request, res: Response) => {
         try {
-            const errorValidation = (req: Request, res: Response) => {
                 const errors = validationResult(req)
-                if (errors.isEmpty()) {
-                    // in case request params meet the validation criteria
-                    return res.status(HttpCode.OK).json(errors.array())
-                }
-                res.status(HttpCode.UNPROCESSABLE_ENTITY).json({ errors: errors.array() })
-                console.log("errors found in user's entries")
-            }
-            errorValidation(req, res)
-
+                if (!errors.isEmpty()) 
+                    return res.status(HttpCode.UNPROCESSABLE_ENTITY).json({ errors: errors.array() });
+            
             const { name, email, password } = req.body
             // hashing the password
             const passHash = await bcrypt.hash(password, 12)
