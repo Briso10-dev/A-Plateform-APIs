@@ -6,7 +6,6 @@ import sendError from "../core/constants/errors";
 import chalk from "chalk"
 import sendMail from "../sentmail/send.mail";
 import { otpGenerate } from "../core/config/otp_generator";
-import tokenOps from "../core/config/jwt.function";
 import { validationResult } from 'express-validator'
 import EmailTemplate from "../core/template";
 import TokenOps from "../core/constants/jwt.functions";
@@ -121,7 +120,7 @@ const Contolleurs = {
             console.error(chalk.red(error))
         }
     },
-    verifyOTP: async (req: Request, res: Response) => {
+    signUp: async (req: Request, res: Response) => {
         const { code_otp, email } = req.body
 
         try {
@@ -205,15 +204,6 @@ const Contolleurs = {
             sendError(res, error)
         }
     },
-    // function that directly load a user in plateform
-    registerUser: async (res: Response) => {
-        try {
-            res.json({ msg: "welcome to worketyamo's plateform" }).status(HttpCode.OK)
-            chalk.blueBright(console.log("A user has connecter"))
-        } catch (error) {
-            console.error(chalk.red(error))
-        }
-    }
 }
 
 export default Contolleurs;
