@@ -178,7 +178,7 @@ const userControllers = {
             const refreshToken = TokenOps.generateRefreshToken(userWithoutPassword);
 
             // Store refresh token in cookie
-            res.cookie(`${user.name}-cookie2`, refreshToken, {
+            res.cookie(`${user.name}-cookie`, refreshToken, {
                 httpOnly: true,
                 secure: true,
                 maxAge: 30 * 24 * 60 * 1000
@@ -213,17 +213,43 @@ const userControllers = {
             sendError(res, error)
         }
     },
+    //Here the idea is a coming to sign in after a long period of inactivity
     refreshToken: async (req: Request, res: Response) => {
         try {
-            // const cookies = req.cookies....
-            // if(!cookie){
-            //     res.status().json()
-            // }
-            // const decodedPayload = tokenOps.decodeAccessToken(ca doit etre refreshToken)
-            // if(decodedPayload!==null){
-            //const {user_id} = verify
-            //...creer un user grace a prisma(en fonction du user_id) puis retirez le password si password est vide,creer un access token et faire un res.json a la fin
-            //}
+            const { email} = req.body
+                
+            const user = await prisma.user.findUnique({
+                select: {
+                    name : true,
+                    email : true,
+                    password:true
+                },
+                where: {
+                    email
+                }
+            })
+
+            if(!user) 
+                return res.status(HttpCode.NOT_FOUND).json({msg:"user not found"})
+
+            const accessToken = req.headers.authorization
+            const refreshToken = req.cookies[`${user.name}-cookie`]
+
+            if(!accessToken && !refreshToken ) //for more checking, checking also that the access token does not exists
+                return res.status(HttpCode.UNAUTHORIZED).json({ msg: `${user.name} You never actually sign in here,please sign-up` })
+            //Now if he succesfully the first step
+            const decodedPayload = TokenOps.verifyRefreshToken(refreshToken)
+            if(!decodedPayload) //Here if does not ave the refresh token it defaults means no access token
+                return res.status(HttpCode.UNAUTHORIZED).json({ msg: `${user.name} Bro your duration here had expired please sign-in again` })
+            
+            // Remove password before token generation
+            const { password: _, ...userWithoutPassword } = user;
+            //genearting a new access token
+            const newAccessToken = TokenOps.generateAccessToken(userWithoutPassword)
+            console.log("Access Token:", newAccessToken);
+
+            return res.status(HttpCode.OK).json({ msg: `${user.name} Welcome back` })
+            
         } catch (error) {
             sendError(res, error)
         }

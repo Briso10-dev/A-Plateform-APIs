@@ -23,17 +23,17 @@ const userMid = {
             sendError(res, error)
         }
     },
-    verifyToken : async (req:Request,res:Response,next:NextFunction)=>{
+    verifyTokens : async (req:Request,res:Response,next:NextFunction)=>{
         try {
-            const { id } = req.params
+            const { email} = req.body
                 
             const user = await prisma.user.findUnique({
                 select: {
-                    user_id: true,
+                    email:true,
                     name: true
                 },
                 where: {
-                    user_id: id
+                    email
                 }
             })
             if(!user) return res.status(HttpCode.NOT_FOUND).json({msg:"user not found"})
