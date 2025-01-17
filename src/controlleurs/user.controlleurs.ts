@@ -52,7 +52,7 @@ const Contolleurs = {
                 return res.status(HttpCode.UNAUTHORIZED).json({msg:"We could not"});
 
             const message = "Reservation succeed"
-            const emailContent = await EmailTemplate.QRcodeSender(
+            const emailContent = await EmailTemplate.OPTcodeSender(
                 user.name,
                 message,
                 user.otp?.code
@@ -80,11 +80,8 @@ const Contolleurs = {
                     role
                 },
             })
-            if (updateUser) {
-                res.json({ "message": "user's info successfully modify" })
-                console.log(updateUser)
-            }
-            else res.send({ msg: "could not create certification" })
+            if (!updateUser) return res.status(HttpCode.BAD_REQUEST).json({ msg: "enterd correct infos" })
+                return res.status(HttpCode.OK).json(updateUser)
         } catch (error) {
             sendError(res, error)
         }
@@ -98,9 +95,9 @@ const Contolleurs = {
                     user_id: id
                 },
             })
-            if (deleteUser)
-                res.json({ "message": "user successfully deleted" })
-            else res.send({ msg: "could not create certification" })
+            if (!deleteUser)
+                return res.status(HttpCode.NOT_FOUND).json({ msg: "user  not found" })
+            res.status(HttpCode.OK).json({ msg: "user successfully deleted" })
         } catch (error) {
             sendError(res, error)
         }
@@ -108,9 +105,9 @@ const Contolleurs = {
     deleteUsers: async (req: Request, res: Response) => {
         try {
             const deleteUsers = await prisma.user.deleteMany()
-            if (deleteUsers)
-                res.json({ "message": "all users successfully deleted" })
-            else res.send({ msg: "could not delete users" })
+            if (!deleteUsers)
+                return res.status(HttpCode.NOT_FOUND).json({ msg: "user  not found" })
+            res.status(HttpCode.OK).json({ msg: "user successfully deleted" })
         } catch (error) {
             console.error(chalk.red(error))
         }
@@ -124,9 +121,10 @@ const Contolleurs = {
                     email
                 },
             })
+            if(!user) return  res.status(HttpCode.NO_CONTENT).json({ msg: 'Email not valid' })
             const actual_time = new Date(Date.now())
             if (user?.otp != null) {
-                    if (user.otp.code === code_otp || user.otp.expiredAt > actual_time) {
+                    if (user.otp.code != code_otp || user.otp.expiredAt > actual_time) {
                         const userUpdate = await prisma.user.update({
                             where: {
                                 email: user.email
@@ -135,13 +133,12 @@ const Contolleurs = {
                                 otp: null
                             }
                         });
-                        res.json({ msg: 'OTP verified successfully' })
-                        console.log(userUpdate)
+                        return res.status(HttpCode.NO_CONTENT).json({ msg: 'Incorrect otp code_entered or already expired otp_code' })
                     }
              
-            } else {
-                return res.json({ msg: "User's email not corresponding" }).status(HttpCode.NO_CONTENT)
-            }
+            } else 
+                return res.json({ msg: "Successful signding here!" }).status(HttpCode.NO_CONTENT)
+            
         } catch (error) {
             sendError(res, error)
         }

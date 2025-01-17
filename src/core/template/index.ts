@@ -3,7 +3,7 @@ import ejs from "ejs";
 import path from "path";
 
 const EmailTemplate = {
-  QRcodeSender: async (userName: string, message: string, OTPcode: number) => {
+  OPTcodeSender: async (userName: string, message: string, OTPcode: number) => {
     try {
       const html = await ejs.renderFile(path.join(__dirname, "otp.ejs"), {
         userName,
