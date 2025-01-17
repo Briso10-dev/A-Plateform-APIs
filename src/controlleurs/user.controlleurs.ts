@@ -168,20 +168,23 @@ const Contolleurs = {
             })
             if (!user)
                 return res.status(HttpCode.NOT_FOUND).json({ msg: `${email} not found` })
+
             const testPass = await bcrypt.compare(password, user.password)
             if (!testPass)
-                return res.status(HttpCode.NOT_FOUND).json({ msg: `${password} not correct` })
-            // jwt token generation
-            user.password = "" //rendering the password null not to create token from it
-            const accessToken = TokenOps.generateAccessToken(user)
-            const refreshToken = TokenOps.generateRefreshToken(user)
-            user.password = " "
-            res.cookie(`${user.name}-cookie`, refreshToken, {
+                return res.status(HttpCode.NOT_FOUND).json({ msg: `${password} Invalid credentials` })
+            // Remove password before token generation
+            const { password: _, ...userWithoutPassword } = user;
+            // Generate tokens
+            const accessToken = TokenOps.generateAccessToken(userWithoutPassword);
+            const refreshToken = TokenOps.generateRefreshToken(userWithoutPassword);
+
+            // Store refresh token in cookie
+            res.cookie(`${user.name}-cookie2`, refreshToken, {
                 httpOnly: true,
                 secure: true,
                 maxAge: 30 * 24 * 60 * 1000
             }) //refresh token stored in cookie
-            console.log(accessToken)
+            console.log("Access Token:", accessToken);
             res.json({ msg: "User successfully logged in" }).status(HttpCode.OK)
         } catch (error) {
             sendError(res, error)
