@@ -1,99 +1,77 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>OTP code sending</title>
-		<style>
-			* {
-				padding: 0;
-				border: 0;
-				margin: 0;
-				box-sizing: border-box;
-			}
-			body {
-				font-family: Arial, sans-serif;
-				line-height: 1.6;
-				color: #333;
-				background-color: #f4f4f4;
-			}
-			.container {
-				width: 100%;
-				max-width: 600px;
-				margin: 0 auto;
-				padding: 20px;
-				background-color: #ffffff;
-			}
-			.header {
-				background-color: #2eaccc;
-				color: white;
-				padding: 20px;
-				text-align: center;
-				border-radius: 5px 5px 0 0;
-			}
-			.content {
-				padding: 30px;
-				background-color: #ffffff;
-				border-radius: 0 0 5px 5px;
-				box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-			}
-			.footer {
-				text-align: center;
-				margin-top: 20px;
-				padding: 10px;
-				font-size: 14px;
-				color: #888;
-				background-color: #f9f9f9;
-				border-radius: 5px;
-			}
-			.qr-code {
-				text-align: center;
-				margin-top: 20px;
-			}
-			.qr-code img {
-				max-width: 200px;
-				height: auto;
-			}
-			.reservation-details {
-				margin-top: 20px;
-				background-color: #f9f9f9;
-				padding: 15px;
-				border-radius: 5px;
-			}
-			.reservation-details p {
-				margin-bottom: 10px;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-			<div class="header">
-				<h1>Table Reservation QR Code</h1>
-			</div>
-			<div class="content">	
-				<p>Dear <%= userName %>,</p>
-				<p>We have take in charge your</p>
-				
-				<!-- <div class="user-details">
-					<p><strong>Date:</strong> <%= date.toDateString() %></p>
-					<p><strong>Time:</strong> <%= hour.toLocaleTimeString() %></p>
-				</div> -->
-
-				<p><%= message %></p>
-
-				<div class="qr-code">
-					<p><strong>Your QR Code:</strong></p>
-					<img src="<%= OTPcode %>" alt="Reservation QR Code" style="max-width: 200px; height: auto;">
-					<br>
-					<p>If the OTP code is not visible, you can access it <a href="<%= OTPcode %>">here</a>.</p>
-					<p>Please present this QR code upon arrival at the restaurant.</p>
-				</div>
-				<br><br>
-				<p>We look forward to serving you!</p>
-			</div>
-			<div class="footer">
-				<p>This is an automated message. Please do not reply to this email.</p>
-			</div>
-		</div>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTP Code</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+      .header {
+        background-color: #2eaccc;
+        color: #ffffff;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        text-align: center;
+      }
+      .content {
+        padding: 20px;
+        color: #333333;
+        line-height: 1.6;
+      }
+      .footer {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f4f4f4;
+        text-align: center;
+        font-size: 12px;
+        color: #888888;
+        border-radius: 0 0 10px 10px;
+      }
+      .otp-code {
+        font-size: 1.5em;
+        color: #2eaccc;
+        font-weight: bold;
+        text-align: center;
+        margin: 20px 0;
+      }
+      a {
+        color: #2eaccc;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Welcome, <%= userName %>!</h1>
+      </div>
+      <div class="content">
+        <p>Thank you for signing up! Here is your OTP code:</p>
+        <div class="otp-code"><%= OTPcode %></div>
+        <p>
+          Please use this code within 10 minutes to complete your registration.
+        </p>
+        <p>
+          If you didn't request this code, please ignore this email or
+          contact our support team.
+        </p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
 </html>

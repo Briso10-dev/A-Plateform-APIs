@@ -3,16 +3,16 @@ import ejs from "ejs";
 import path from "path";
 
 const EmailTemplate = {
-  QRcodeSender: async (userName:string,message: string,OPTcode:number) => {
+  QRcodeSender: async (userName: string, message: string, OTPcode: number) => {
     try {
       const html = await ejs.renderFile(path.join(__dirname, "otp.ejs"), {
         userName,
         message,
-        OPTcode
+        OTPcode, // Match variable name with the template
       });
       return html;
     } catch (error) {
-      console.error("Error rendering Reminder template:", error);
+      console.error("Error rendering template:", error);
       return "";
     }
   },
