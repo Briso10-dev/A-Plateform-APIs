@@ -13,7 +13,7 @@ import TokenOps from "../core/constants/jwt.functions";
 const prisma = new PrismaClient()
 
 // creation of objects of functions
-const Contolleurs = {
+const userControllers = {
     getallUsers: async (req: Request, res: Response) => {
         try {
             const users = await prisma.user.findMany()
@@ -189,6 +189,30 @@ const Contolleurs = {
             sendError(res, error)
         }
     },
+    logoutUser: async (req: Request, res: Response) => {
+        try {
+
+            const { email } = req.body
+            //confirming first by email if user exists 
+            const user = await prisma.user.findFirst({
+                select: {
+                    name: true,
+                    email: true
+                },
+                where: {
+                    email
+                }
+            })
+            if (!user)
+                return res.status(HttpCode.NOT_FOUND).json({ msg: `${email} not found` })
+            // obtaiining user's token
+            res.clearCookie('${user.name}-cookie`')
+            return res.status(HttpCode.OK).json({ msg: "User succesffully logout" })
+
+        } catch (error) {
+            sendError(res, error)
+        }
+    },
     refreshToken: async (req: Request, res: Response) => {
         try {
             // const cookies = req.cookies....
@@ -206,4 +230,4 @@ const Contolleurs = {
     },
 }
 
-export default Contolleurs;
+export default userControllers;
