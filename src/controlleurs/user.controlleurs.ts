@@ -9,6 +9,7 @@ import { otpGenerate } from "../core/config/otp_generator";
 import tokenOps from "../core/config/jwt.function";
 import { validationResult } from 'express-validator'
 import EmailTemplate from "../core/template";
+import TokenOps from "../core/constants/jwt.functions";
 
 const prisma = new PrismaClient()
 
@@ -67,21 +68,29 @@ const Contolleurs = {
     },
     modifyUser: async (req: Request, res: Response) => {
         try {
-            const { id } = req.params
-            const { name, email, password, role } = req.body
+            const { id } = req.params //obtaining a user's id
+            const { name, email, password,role } = req.body //obtaining modified users's info
+
+            const passHash = await bcrypt.hash(password, 10)
+
             const updateUser = await prisma.user.update({
+                select: {
+                    name: true,
+                    email: true,
+                    password: true
+                },
                 where: {
                     user_id: id
                 },
                 data: {
                     name,
                     email,
-                    password,
+                    password: passHash,
                     role
-                },
+                }
             })
             if (!updateUser) return res.status(HttpCode.BAD_REQUEST).json({ msg: "enterd correct infos" })
-                return res.status(HttpCode.OK).json(updateUser)
+            return res.status(HttpCode.OK).json(updateUser)
         } catch (error) {
             sendError(res, error)
         }
@@ -148,21 +157,32 @@ const Contolleurs = {
 
         try {
             const user = await prisma.user.findFirst({
+                select: {
+                    name: true,
+                    email: true,
+                    password: true
+                },
                 where: {
                     email
                 },
             })
-            if (user != null) {
-                const testPass = await bcrypt.compare(password, user.password)
-                if (testPass || user.otp?.code == null) {
-                    //const accessToken = tokenOps.createToken(user)
-                    const refreshToken = tokenOps.createToken(user)
-                    user.password = ""
-                    res.cookie("Briso's connection", refreshToken, { httpOnly: true, secure: true })
-                    res.json({ msg: "User successfully logged in" }).status(HttpCode.OK)
-                    console.log(user)
-                } else res.send("Wrong password entered,retry again")
-            } else console.log(chalk.red("No user found"))
+            if (!user)
+                return res.status(HttpCode.NOT_FOUND).json({ msg: `${email} not found` })
+            const testPass = await bcrypt.compare(password, user.password)
+            if (!testPass)
+                return res.status(HttpCode.NOT_FOUND).json({ msg: `${password} not correct` })
+            // jwt token generation
+            user.password = "" //rendering the password null not to create token from it
+            const accessToken = TokenOps.generateAccessToken(user)
+            const refreshToken = TokenOps.generateRefreshToken(user)
+            user.password = " "
+            res.cookie(`${user.name}-cookie`, refreshToken, {
+                httpOnly: true,
+                secure: true,
+                maxAge: 30 * 24 * 60 * 1000
+            }) //refresh token stored in cookie
+            console.log(accessToken)
+            res.json({ msg: "User successfully logged in" }).status(HttpCode.OK)
         } catch (error) {
             sendError(res, error)
         }
