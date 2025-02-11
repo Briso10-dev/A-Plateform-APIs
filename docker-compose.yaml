@@ -1,12 +1,16 @@
+version: '3.8'
+
 services:
   app:
     build: .
     ports:
-      - '4000:3000'
+      - '4000:3000'  # Maps container port 3000 to local port 4000
     env_file:
       - ./.env
     depends_on:
       - mongo
+    volumes:
+      - .:/app
     develop:
       watch:
         - path: ./
@@ -15,11 +19,20 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - '27017:27017'
+      - '27017:27017'  # MongoDB accessible on local machine
     env_file:
       - ./.env
     volumes:
       - mongo-data:/data/db
 
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - "8081:8081"  # Web UI accessible on localhost:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+
 volumes:
   mongo-data:
+
